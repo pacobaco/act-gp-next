@@ -1,7 +1,7 @@
 # Act-GP Next
 
 Act-GP Next is a Python-based serverless API project built for Vercel.  
-It provides multiple endpoints to experiment with AI-powered tasks and predictions, easily deployable on Vercel’s serverless platform.
+It provides multiple endpoints to experiment with AI-powered tasks and live web search queries via multiple search index APIs.
 
 ---
 
@@ -12,22 +12,20 @@ It provides multiple endpoints to experiment with AI-powered tasks and predictio
   - `/api/hello` — Test endpoint
   - `/api/generate` — Sample generate endpoint
   - `/api/predict` — Sample prediction endpoint
-- Ready-to-deploy `vercel.json` and `requirements.txt`
+  - `/api/index` — Multi-API live web search endpoint
+- Multi-API search supports 10 APIs via `?api=` flag:
+  - `serpapi` — SerpApi Google search
+  - `dataforseo` — DataForSEO live SERP
+  - `duckduckgo` — DuckDuckGo Instant Answer
+  - `bing` — Bing Web Search API
+  - `google_cse` — Google Custom Search Engine
+  - `zenserp` — Zenserp API
+  - `webzio` — Webz.io structured search
+  - `apify` — Apify SERP Scraper
+  - `seventimes` — Seventimes API
+  - `searchapi` — SearchAPI.net
+- Returns structured JSON with top 5 results per query
 - Compatible with Python 3.11 runtime
-
----
-
-## Project Structure
-
-```
-act-gp-next/
-├─ api/
-│  ├─ hello.py        # Test endpoint
-│  ├─ generate.py     # Sample generate endpoint
-│  └─ predict.py      # Sample prediction endpoint
-├─ requirements.txt   # Python dependencies
-└─ vercel.json        # Vercel deployment config
-```
 
 ---
 
@@ -50,20 +48,36 @@ pip install -r requirements.txt
 
 ## Deployment on Vercel
 
-1. Make sure you have [Vercel CLI](https://vercel.com/download) installed.
+1. Install [Vercel CLI](https://vercel.com/download)
 2. Login to Vercel:
 
 ```bash
 vercel login
 ```
 
-3. Deploy the project:
+3. Add required **environment variables** for API keys:
+
+```bash
+vercel env add SERPAPI_KEY production
+vercel env add DATAFORSEO_KEY production
+vercel env add DATAFORSEO_SECRET production
+vercel env add BING_KEY production
+vercel env add GOOGLE_CSE_KEY production
+vercel env add GOOGLE_CSE_ID production
+vercel env add ZENSERP_KEY production
+vercel env add WEBZIO_KEY production
+vercel env add APIFY_TOKEN production
+vercel env add SEVENTIMES_KEY production
+vercel env add SEARCHAPI_KEY production
+```
+
+4. Deploy:
 
 ```bash
 vercel deploy
 ```
 
-4. Vercel will provide a URL for your deployed API, e.g.:
+Vercel will provide a URL for your deployed API, e.g.:
 
 ```
 https://act-gp-next.vercel.app/api/hello
@@ -73,14 +87,12 @@ https://act-gp-next.vercel.app/api/hello
 
 ## Usage
 
-All API endpoints return JSON responses. Example:
-
+### Hello Endpoint
 ```bash
 curl https://<YOUR_VERCEL_URL>/api/hello
 ```
 
 Response:
-
 ```json
 {
   "statusCode": 200,
@@ -88,51 +100,31 @@ Response:
 }
 ```
 
-Similarly:
-
+### Multi-API Search Endpoint
 ```bash
-curl https://<YOUR_VERCEL_URL>/api/predict
+curl "https://<YOUR_VERCEL_URL>/api/index?q=artificial+intelligence&api=serpapi"
 ```
 
-Response:
+Query parameters:
+
+- `q` — search query
+- `api` — API flag (one of `serpapi`, `dataforseo`, `duckduckgo`, `bing`, `google_cse`, `zenserp`, `webzio`, `apify`, `seventimes`, `searchapi`)
+
+Response example:
 
 ```json
 {
-  "prediction": "AI predicts success!"
+  "api": "serpapi",
+  "query": "artificial intelligence",
+  "results": [
+    {"title": "AI News", "link": "https://example.com", "snippet": "Latest AI news..."},
+    ...
+  ]
 }
 ```
 
 ---
 
-## Adding New Endpoints
-
-1. Create a new Python file in the `api/` folder, e.g., `new_endpoint.py`.
-2. Define a `handler(request)` function that returns a JSON-compatible dictionary:
-
-```python
-def handler(request):
-    return {"statusCode": 200, "body": "Hello from new endpoint!"}
-```
-
-3. Deploy to Vercel using `vercel deploy`.
-
----
-
-## Requirements
-
-- Python 3.11
-- Vercel account
-- Python dependencies listed in `requirements.txt`
-
----
-
 ## License
 
-This project is open-source under the MIT License.  
-
----
-
-## Acknowledgements
-
-- Built with Vercel Serverless Functions  
-- Inspired by AI experimentation and rapid prototyping workflows
+This project is open-source under the MIT License.
