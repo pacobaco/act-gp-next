@@ -1,7 +1,20 @@
 {
+  "version": 3,
   "functions": {
     "api/**/*.py": {
-      "excludeFiles": "tests/**"
+      "runtime": "python3.11"
     }
-  }
+  },
+  "builds": [
+    {
+      "src": "api/**/*.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.py"
+    }
+  ]
 }
